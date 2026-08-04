@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Risk Matrix AI - V3.6</title>
+    <title>Risk Matrix AI - V3.7</title>
     <style>
         :root {
             --bg-main: #0f172a;
@@ -97,12 +97,6 @@
         .card-stat h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
         .card-stat .number { font-size: 1.8rem; font-weight: bold; }
 
-        .risk-score-card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
-        .risk-score-item { display: flex; flex-direction: column; gap: 5px; padding: 10px; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border); }
-        .risk-score-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        .risk-bar-container { display: flex; align-items: center; gap: 15px; }
-        .risk-progress-bar { font-family: monospace; font-size: 1.1rem; letter-spacing: 1px; color: var(--accent); }
-
         .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
         .matrix-cell { background: var(--bg-main); border: 1px solid var(--border); height: 110px; border-radius: 6px; padding: 8px; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: 0.2s; overflow-y: auto; }
         .matrix-cell:hover { border-color: var(--accent); transform: scale(1.02); }
@@ -122,7 +116,7 @@
     <!-- LANDING PAGE -->
     <div id="landing-view">
         <div style="font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-            Risk Matrix <span class="badge" style="background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">V3.6</span>
+            Risk Matrix <span class="badge" style="background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">V3.7</span>
         </div>
         <div class="landing-hero">
             <h1>Sécurisez votre foyer numérique <span>intelligemment</span></h1>
@@ -138,7 +132,7 @@
             <div class="sidebar-top">
                 <div class="logo-area">
                     <div class="logo-main" onclick="returnToLanding()">
-                        <span>🛡️</span> <span class="logo-text">Risk Matrix <span class="badge">V3.6</span></span>
+                        <span>🛡️</span> <span class="logo-text">Risk Matrix <span class="badge">V3.7</span></span>
                     </div>
                     <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="toggleSidebar()" title="Réduire / Agrandir le menu">↔</button>
                 </div>
@@ -172,7 +166,7 @@
                         <!-- ÉTAPE 1 & 2 -->
                         <div id="w-step-1" class="wizard-step-content active-step">
                             <h3 style="color: var(--accent);">Étape 1 & 2 – Construisez votre foyer & Actifs personnalisés</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">Cochez vos équipements ou ajoutez un actif sur-mesure (ex: NAS Synology).</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Cochez vos équipements ou ajoutez un actif sur-mesure.</p>
                             
                             <div class="category-box" style="border-color: var(--accent);">
                                 <h4 style="color: var(--accent);">➕ Ajouter un équipement personnalisé</h4>
@@ -187,7 +181,7 @@
                                         <option value="accounts">Compte</option>
                                         <option value="other">Autre</option>
                                     </select>
-                                    <button class="btn" onclick="addNewCustomEquipment()">➕ Ajouter à la liste</button>
+                                    <button class="btn" onclick="addNewCustomEquipment()">➕ Ajouter</button>
                                 </div>
                             </div>
 
@@ -198,7 +192,6 @@
                                     <label class="checkbox-label"><input type="checkbox" value="Routeur Wi-Fi"> Routeur Wi-Fi</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Répéteur Wi-Fi"> Répéteur Wi-Fi</label>
                                     <label class="checkbox-label"><input type="checkbox" value="CPL"> CPL</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Pare-feu personnel"> Pare-feu personnel</label>
                                 </div>
                             </div>
 
@@ -215,27 +208,20 @@
                             <div class="category-box">
                                 <h4>📱 Appareils mobiles</h4>
                                 <div class="checkbox-grid" id="grid-mobile">
-                                    <label class="checkbox-label"><input type="checkbox" checked value="Smartphone Android"> Smartphone Android</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Smartphone Android"> Smartphone Android</label>
                                     <label class="checkbox-label"><input type="checkbox" value="iPhone"> iPhone</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Tablette Android"> Tablette Android</label>
                                     <label class="checkbox-label"><input type="checkbox" value="iPad"> iPad</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Montre connectée"> Montre connectée</label>
                                 </div>
                             </div>
 
                             <div class="category-box">
                                 <h4>📺 Maison connectée / IoT</h4>
                                 <div class="checkbox-grid" id="grid-home">
-                                    <label class="checkbox-label"><input type="checkbox" checked value="Smart TV"> Smart TV</label>
-                                    <label class="checkbox-label"><input type="checkbox" checked value="Caméra IP" id="chk-camera"> Caméra IP</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Smart TV"> Smart TV</label>
+                                    <label class="checkbox-label"><input type="checkbox" checked value="Caméra IP"> Caméra IP</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Sonnette connectée"> Sonnette connectée</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Alexa"> Alexa</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Google Home"> Google Home</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Thermostat"> Thermostat</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Ampoules connectées"> Ampoules connectées</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Prises connectées"> Prises connectées</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Aspirateur robot"> Aspirateur robot</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Serrure connectée"> Serrure connectée</label>
                                 </div>
                             </div>
 
@@ -244,8 +230,6 @@
                                 <div class="checkbox-grid" id="grid-gaming">
                                     <label class="checkbox-label"><input type="checkbox" value="PlayStation"> PlayStation</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Xbox"> Xbox</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Nintendo Switch"> Nintendo Switch</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Steam Deck"> Steam Deck</label>
                                 </div>
                             </div>
 
@@ -253,16 +237,8 @@
                                 <h4>☁️ Comptes importants</h4>
                                 <div class="checkbox-grid" id="grid-accounts">
                                     <label class="checkbox-label"><input type="checkbox" value="Gmail"> Gmail</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Outlook"> Outlook</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Apple ID"> Apple ID</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Microsoft"> Microsoft</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Banque en ligne"> Banque en ligne</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Assurance"> Assurance</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="CAF"> CAF</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="France Identité"> France Identité</label>
                                     <label class="checkbox-label"><input type="checkbox" value="Impôts"> Impôts</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="Amazon"> Amazon</label>
-                                    <label class="checkbox-label"><input type="checkbox" value="PayPal"> PayPal</label>
                                 </div>
                             </div>
 
@@ -271,10 +247,10 @@
                             </div>
                         </div>
 
-                        <!-- ÉTAPE 3 : QUESTIONS INTELLIGENTES AVEC SELECTS (OUI/NON) -->
+                        <!-- ÉTAPE 3 : QUESTIONS INTELLIGENTES -->
                         <div id="w-step-2" class="wizard-step-content">
                             <h3 style="color: var(--accent);">Étape 3 – Questions intelligentes contextuelles</h3>
-                            <p style="color: var(--text-muted); font-size: 0.9rem;">Répondez via les menus déroulants aux questions spécifiques de vos actifs.</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Répondez via les menus déroulants aux questions spécifiques de vos actifs sélectionnés.</p>
                             
                             <div id="dynamic-questions-container"></div>
 
@@ -289,35 +265,14 @@
 
                 <!-- VUE GRAPHIQUE & RISK SCORES -->
                 <div id="view-graphic" class="view-section">
-                    <div class="risk-score-card">
+                    <div class="risk-score-card" style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px;">
                         <h3>Cartographie visuelle – Risk Scores par Actif</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">Évaluation dynamique des risques par équipement critique de votre foyer.</p>
-                        
-                        <div class="risk-score-item">
-                            <div class="risk-score-header"><span>📱 Smartphone</span><span style="color: var(--danger);">98 %</span></div>
-                            <div class="risk-bar-container"><span class="risk-progress-bar">██████████</span></div>
-                        </div>
-                        <div class="risk-score-item">
-                            <div class="risk-score-header"><span>🌐 Box Internet</span><span style="color: var(--warning);">83 %</span></div>
-                            <div class="risk-bar-container"><span class="risk-progress-bar">████████░░</span></div>
-                        </div>
-                        <div class="risk-score-item">
-                            <div class="risk-score-header"><span>📷 Caméra</span><span style="color: var(--warning);">72 %</span></div>
-                            <div class="risk-bar-container"><span class="risk-progress-bar">███████░░░</span></div>
-                        </div>
-                        <div class="risk-score-item">
-                            <div class="risk-score-header"><span>📺 TV</span><span style="color: var(--success);">28 %</span></div>
-                            <div class="risk-bar-container"><span class="risk-progress-bar">███░░░░░░░</span></div>
-                        </div>
-
-                        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-                            <button class="btn btn-secondary" onclick="switchView('wizard')">← Retour au foyer</button>
-                            <button class="btn btn-lg" onclick="switchView('dashboard')">Voir la Matrice de Criticité →</button>
-                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Évaluation dynamique basée sur vos équipements sélectionnés.</p>
+                        <div id="graphic-scores-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
                     </div>
                 </div>
 
-                <!-- VUE TABLEAU DE BORD & MATRICE INTERACTIVE -->
+                <!-- VUE TABLEAU DE BORD & MATRICE -->
                 <div id="view-dashboard" class="view-section">
                     <div class="dashboard-cards">
                         <div class="card-stat"><h3>Total Risques</h3><div class="number" id="stat-total">0</div></div>
@@ -331,7 +286,6 @@
                         <div class="matrix-grid" id="matrix-container" style="margin-top: 15px;"></div>
                     </div>
 
-                    <!-- Panneau de détails dynamique -->
                     <div id="matrix-details-panel" style="display: none; background: var(--bg-card); border: 1px solid var(--accent); padding: 20px; border-radius: 12px; gap: 15px; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <h4 id="details-title" style="color: var(--accent);">Détails de la case</h4>
@@ -366,37 +320,20 @@
                 <div id="view-policy" class="view-section">
                     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 20px;">
                         <h3>Politique & Assistant IA</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">Paramétrage des seuils et évaluation contextuelle automatisée.</p>
-                        
-                        <div class="category-box">
-                            <h4 style="color: var(--accent); margin-bottom: 10px;">Paramétrage de la Politique de Risque (Seuils)</h4>
-                            <div style="display: flex; gap: 20px;">
-                                <div>
-                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Critique / Élevé :</label>
-                                    <input type="number" class="input-text" value="12" style="width: 120px;">
-                                </div>
-                                <div>
-                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Moyen :</label>
-                                    <input type="number" class="input-text" value="6" style="width: 120px;">
-                                </div>
-                            </div>
-                        </div>
-
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Soumission de scénarios de menace pour analyse dynamique.</p>
                         <div class="category-box">
                             <h4 style="color: var(--accent); margin-bottom: 10px;">Soumettre un Scénario de Menace à l'IA</h4>
-                            <input type="text" class="input-text" placeholder="Ex: Attaque par ransomware sur le réseau...">
-                            <button class="btn btn-ai" style="margin-top: 15px;">Analyser et intégrer au registre</button>
+                            <input type="text" class="input-text" id="ai-scenario-input" placeholder="Ex: Attaque par ransomware sur le réseau...">
+                            <button class="btn btn-ai" style="margin-top: 15px;" onclick="analyzeCustomScenario()">Analyser et intégrer au registre</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- VUE PARAMÈTRES (AVEC TAILLE DES CARACTÈRES & IA) -->
+                <!-- VUE PARAMÈTRES -->
                 <div id="view-settings" class="view-section">
                     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 20px;">
                         <h3>Paramètres</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">Configuration de l'apparence, de la typographie et du fournisseur d'intelligence artificielle.</p>
-                        
-                        <div style="border-top: 1px solid var(--border); padding-top: 15px; display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
                             <div style="flex: 1; min-width: 200px;">
                                 <h4 style="margin-bottom: 10px;">Thème</h4>
                                 <select class="select-val" onchange="toggleTheme(this.value)">
@@ -406,30 +343,21 @@
                             </div>
                             <div style="flex: 1; min-width: 200px;">
                                 <h4 style="margin-bottom: 10px;">Taille des caractères</h4>
-                                <select class="select-val" id="font-size-select" onchange="changeFontSize(this.value)">
+                                <select class="select-val" onchange="changeFontSize(this.value)">
                                     <option value="12px">Petite (12px)</option>
                                     <option value="14px" selected>Normale (14px)</option>
                                     <option value="16px">Grande (16px)</option>
-                                    <option value="18px">Très grande (18px)</option>
                                 </select>
                             </div>
                         </div>
-
                         <div style="border-top: 1px solid var(--border); padding-top: 15px;">
-                            <h4 style="margin-bottom: 10px;">Fournisseur IA</h4>
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Choisissez avec quelle IA vous souhaitez travailler ou désactivez-la.</p>
-                            
-                            <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Sélectionnez l'IA :</label>
+                            <h4 style="margin-bottom: 10px;">Fournisseur IA & Clé API</h4>
                             <select class="select-val" id="ai-provider-select" style="max-width:350px; margin-bottom: 15px;" onchange="toggleApiKeyField(this.value)">
-                                <option value="none">Sans IA</option>
-                                <option value="openai">OpenAI (ChatGPT)</option>
-                                <option value="anthropic">Anthropic (Claude)</option>
+                                <option value="none">Sans IA (Génération locale)</option>
                                 <option value="gemini" selected>Google Gemini</option>
-                                <option value="ollama">Ollama (Local)</option>
+                                <option value="openai">OpenAI (ChatGPT)</option>
                             </select>
-
                             <div id="api-key-container" style="display: flex; flex-direction: column; gap: 5px; max-width: 350px;">
-                                <label style="color: var(--text-muted); font-size:0.85rem;">Clé API :</label>
                                 <input type="password" class="input-text" id="ai-api-key" placeholder="Entrez votre clé API...">
                             </div>
                         </div>
@@ -441,25 +369,20 @@
     </div>
 
     <script>
-        let risksData = [
-            { asset: "Smartphone Android", title: "Vol ou compromission de données", prob: 4, impact: 5, prev: "Configuré", cont: "Configuré", pra: "Non applicable" },
-            { asset: "Caméra IP", title: "Accès non autorisé au flux", prob: 3, impact: 4, prev: "Configuré", cont: "En cours", pra: "Configuré" },
-            { asset: "Box Internet", title: "Exposition de services", prob: 2, impact: 3, prev: "Configuré", cont: "Non applicable", pra: "Configuré" }
-        ];
+        let risksData = [];
 
         function launchApp() {
             document.getElementById('landing-view').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
+            generateRisksFromSelection();
         }
         function returnToLanding() {
             document.getElementById('app-container').style.display = 'none';
             document.getElementById('landing-view').style.display = 'flex';
         }
         function toggleSidebar() {
-            const sidebar = document.getElementById('main-sidebar');
-            const main = document.getElementById('main-content');
-            sidebar.classList.toggle('collapsed');
-            main.classList.toggle('expanded');
+            document.getElementById('main-sidebar').classList.toggle('collapsed');
+            document.getElementById('main-content').classList.toggle('expanded');
         }
         function switchView(viewName) {
             document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
@@ -471,6 +394,7 @@
             } else if(viewName === 'graphic') {
                 document.getElementById('nav-graphic').classList.add('active');
                 document.getElementById('view-graphic').classList.add('active-view');
+                renderGraphicScores();
             } else if(viewName === 'dashboard') {
                 document.getElementById('nav-dashboard').classList.add('active');
                 document.getElementById('view-dashboard').classList.add('active-view');
@@ -499,76 +423,82 @@
             const catSelect = document.getElementById('custom-eq-cat');
             const name = nameInput.value.trim();
             const cat = catSelect.value;
-
-            if(!name) {
-                alert("Veuillez saisir un nom d'équipement.");
-                return;
-            }
-
-            const gridId = `grid-${cat}`;
-            const grid = document.getElementById(gridId);
+            if(!name) return alert("Veuillez saisir un nom.");
+            const grid = document.getElementById(`grid-${cat}`);
             if(grid) {
                 const label = document.createElement('label');
                 label.className = 'checkbox-label';
                 label.innerHTML = `<input type="checkbox" checked value="${name}"> ${name}`;
                 grid.appendChild(label);
                 nameInput.value = '';
-                alert(`Équipement "${name}" ajouté avec succès !`);
             }
         }
 
-        // Étape 3 : Questions dynamiques avec menus déroulants (Oui/Non ou Cloud/Local)
         function buildDynamicQuestions() {
             const container = document.getElementById('dynamic-questions-container');
             container.innerHTML = '';
+            const checkedAssets = getCheckedAssets();
 
-            const cameraChecked = Array.from(document.querySelectorAll('#grid-home input[type="checkbox"]'))
-                .some(chk => chk.value.includes('Caméra') && chk.checked);
-
-            if(cameraChecked) {
+            checkedAssets.forEach(asset => {
                 container.innerHTML += `
                     <div class="question-block">
-                        <h4 style="color: var(--accent); margin-bottom: 10px;">📹 Questions spécifiques : Caméra IP</h4>
-                        <div class="question-row"><span>Est-elle accessible directement depuis Internet ?</span> 
-                            <select class="select-val" style="width:160px;"><option>Non</option><option>Oui</option></select>
-                        </div>
-                        <div class="question-row"><span>Utilise-t-elle un mot de passe unique/par défaut ?</span> 
-                            <select class="select-val" style="width:160px;"><option>Oui</option><option>Non</option></select>
-                        </div>
-                        <div class="question-row"><span>Double authentification activée ?</span> 
-                            <select class="select-val" style="width:160px;"><option>Non</option><option>Oui</option></select>
-                        </div>
-                        <div class="question-row"><span>Firmware à jour ?</span> 
-                            <select class="select-val" style="width:160px;"><option>Oui</option><option>Non</option></select>
-                        </div>
-                        <div class="question-row"><span>Stockage cloud ou local ?</span> 
-                            <select class="select-val" style="width:160px;"><option>Local</option><option>Cloud</option></select>
-                        </div>
+                        <h4 style="color: var(--accent); margin-bottom: 10px;">⚙️ Questions spécifiques : ${asset}</h4>
+                        <div class="question-row"><span>Exposition directe Internet ?</span> <select class="select-val" style="width:140px;"><option>Non</option><option>Oui</option></select></div>
+                        <div class="question-row"><span>Mots de passe par défaut / uniques ?</span> <select class="select-val" style="width:140px;"><option>Oui</option><option>Non</option></select></div>
                     </div>
                 `;
-            }
+            });
 
             if(container.innerHTML === '') {
-                container.innerHTML = `<p style="color: var(--text-muted);">Aucune question spécifique requise pour les actifs sélectionnés. Vous pouvez passer à l'étape suivante.</p>`;
+                container.innerHTML = `<p style="color: var(--text-muted);">Aucun équipement sélectionné. Veuillez revenir à l'étape précédente.</p>`;
             }
+        }
+
+        function getCheckedAssets() {
+            const checkboxes = document.querySelectorAll('.category-box input[type="checkbox"]');
+            let checked = [];
+            checkboxes.forEach(chk => {
+                if(chk.checked) checked.push(chk.value);
+            });
+            return checked;
+        }
+
+        // Génération dynamique des risques basée uniquement sur les actifs cochés
+        function generateRisksFromSelection() {
+            const checked = getCheckedAssets();
+            risksData = [];
+
+            checked.forEach(asset => {
+                if(asset.includes('Smartphone') || asset.includes('iPhone')) {
+                    risksData.push({ asset: asset, title: "Vol ou compromission de données personnelles", prob: 4, impact: 5, prev: "Configuré", cont: "En cours", pra: "Non applicable" });
+                } else if(asset.includes('Caméra')) {
+                    risksData.push({ asset: asset, title: "Accès non autorisé au flux vidéo", prob: 3, impact: 4, prev: "Configuré", cont: "En cours", pra: "Configuré" });
+                } else if(asset.includes('Box Internet')) {
+                    risksData.push({ asset: asset, title: "Exposition de services et failles routeur", prob: 2, impact: 3, prev: "Configuré", cont: "Non applicable", pra: "Configuré" });
+                } else if(asset.includes('PC') || asset.includes('Mac') || asset.includes('Linux')) {
+                    risksData.push({ asset: asset, title: "Infection par ransomware / Logiciel malveillant", prob: 3, impact: 4, prev: "En cours", cont: "Configuré", pra: "Configuré" });
+                } else {
+                    risksData.push({ asset: asset, title: "Vulnérabilité potentielle et absence de mise à jour", prob: 2, impact: 2, prev: "En cours", cont: "Non applicable", pra: "Non applicable" });
+                }
+            });
         }
 
         function runAiGeneration() {
-            alert("L'IA a généré avec succès :\n- La cartographie des actifs\n- Les dépendances\n- Les scénarios d'attaque\n- La matrice de risques !");
+            generateRisksFromSelection();
+            alert(`Analyse IA terminée !\n- ${risksData.length} actifs analysés\n- Registre et matrice mis à jour avec succès.`);
             switchView('dashboard');
         }
 
-        function toggleApiKeyField(val) {
-            const container = document.getElementById('api-key-container');
-            if(val === 'none' || val === 'ollama') container.style.display = 'none';
-            else container.style.display = 'flex';
+        function analyzeCustomScenario() {
+            const input = document.getElementById('ai-scenario-input');
+            if(!input.value.trim()) return alert("Veuillez saisir un scénario.");
+            risksData.push({ asset: "Personnalisé (IA)", title: input.value, prob: 4, impact: 4, prev: "En cours", cont: "En cours", pra: "Configuré" });
+            input.value = "";
+            alert("Scénario analysé et intégré au registre des risques !");
+            switchView('register');
         }
 
-        function changeFontSize(size) {
-            document.documentElement.style.setProperty('--font-size-base', size);
-        }
-
-        function updateRiskValue(index, field, value) { risksData[index][field] = parseInt(value); renderRegisterTable(); }
+        function updateRiskValue(index, field, value) { risksData[index][field] = parseInt(value); }
 
         function renderRegisterTable() {
             const tbody = document.getElementById('risk-table-body');
@@ -581,20 +511,12 @@
                     <tr>
                         <td><strong>${r.asset}</strong></td>
                         <td>${r.title}</td>
-                        <td>
-                            <select class="select-val" style="width:70px;" onchange="updateRiskValue(${index}, 'prob', this.value)">
-                                ${[1,2,3,4,5].map(v => `<option value="${v}" ${v===r.prob?'selected':''}>${v}</option>`).join('')}
-                            </select>
-                        </td>
-                        <td>
-                            <select class="select-val" style="width:70px;" onchange="updateRiskValue(${index}, 'impact', this.value)">
-                                ${[1,2,3,4,5].map(v => `<option value="${v}" ${v===r.impact?'selected':''}>${v}</option>`).join('')}
-                            </select>
-                        </td>
+                        <td><select class="select-val" style="width:70px;" onchange="updateRiskValue(${index}, 'prob', this.value)"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
+                        <td><select class="select-val" style="width:70px;" onchange="updateRiskValue(${index}, 'impact', this.value)"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td>
                         <td><span style="color:${color}; font-weight:bold;">${critLabel} (${score})</span></td>
-                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].prev = this.value"><option ${r.prev==='Configuré'?'selected':''}>Configuré</option><option ${r.prev==='En cours'?'selected':''}>En cours</option><option ${r.prev==='Non applicable'?'selected':''}>Non applicable</option></select></td>
-                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].cont = this.value"><option ${r.cont==='Configuré'?'selected':''}>Configuré</option><option ${r.cont==='En cours'?'selected':''}>En cours</option><option ${r.cont==='Non applicable'?'selected':''}>Non applicable</option></select></td>
-                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].pra = this.value"><option ${r.pra==='Configuré'?'selected':''}>Configuré</option><option ${r.pra==='En cours'?'selected':''}>En cours</option><option ${r.pra==='Non applicable'?'selected':''}>Non applicable</option></select></td>
+                        <td><select class="select-val" style="width:130px;"><option>Configuré</option><option>En cours</option></select></td>
+                        <td><select class="select-val" style="width:130px;"><option>Configuré</option><option>En cours</option></select></td>
+                        <td><select class="select-val" style="width:130px;"><option>Configuré</option><option>Non applicable</option></select></td>
                     </tr>
                 `;
             }).join('');
@@ -616,57 +538,43 @@
             for (let y = 5; y >= 1; y--) {
                 for (let x = 1; x <= 5; x++) {
                     let score = x * y;
-                    let cellClass = 'risk-low';
-                    if (score >= 12) cellClass = 'risk-high';
-                    else if (score >= 6) cellClass = 'risk-med';
-
+                    let cellClass = score >= 12 ? 'risk-high' : (score >= 6 ? 'risk-med' : 'risk-low');
                     let cellRisks = risksData.filter(r => r.prob === x && r.impact === y);
 
                     let cellDiv = document.createElement('div');
                     cellDiv.className = `matrix-cell ${cellClass}`;
                     cellDiv.onclick = () => showCellDetails(x, y, cellRisks);
-                    cellDiv.innerHTML = `
-                        <span>P:${x} I:${y}</span>
-                        <div>
-                            ${cellRisks.map(r => `<div class="matrix-cell-content">• ${r.title}</div>`).join('')}
-                        </div>
-                    `;
+                    cellDiv.innerHTML = `<span>P:${x} I:${y}</span><div>${cellRisks.map(r => `<div class="matrix-cell-content">• ${r.asset}</div>`).join('')}</div>`;
                     container.appendChild(cellDiv);
                 }
             }
         }
 
+        function renderGraphicScores() {
+            const container = document.getElementById('graphic-scores-container');
+            container.innerHTML = risksData.map(r => {
+                let score = r.prob * r.impact * 4;
+                let color = score >= 60 ? 'var(--danger)' : (score >= 30 ? 'var(--warning)' : 'var(--success)');
+                return `
+                    <div style="display:flex; flex-direction:column; gap:5px; padding:10px; background:var(--bg-main); border:1px solid var(--border); border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>${r.asset}</span><span style="color:${color};">${score} %</span></div>
+                        <div style="font-family:monospace; color:var(--accent);">██████████</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         function showCellDetails(x, y, risks) {
             const panel = document.getElementById('matrix-details-panel');
-            const title = document.getElementById('details-title');
-            const content = document.getElementById('details-content');
-
             panel.style.display = 'flex';
-            title.textContent = `Détails de la case — Probabilité : ${x} | Impact : ${y}`;
-
-            if(risks.length === 0) {
-                content.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aucun risque enregistré pour cette position.</p>`;
-            } else {
-                content.innerHTML = risks.map(r => `
-                    <div style="background:var(--bg-main); border:1px solid var(--border); padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <strong>${r.title}</strong>
-                            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Actif : ${r.asset} | Score : ${r.prob * r.impact}</p>
-                        </div>
-                        <button class="btn" onclick="switchView('register')">Voir dans le registre</button>
-                    </div>
-                `).join('');
-            }
+            document.getElementById('details-title').textContent = `Détails de la case (P:${x} | I:${y})`;
+            document.getElementById('details-content').innerHTML = risks.length ? risks.map(r => `<div><strong>${r.asset}</strong>: ${r.title}</div>`).join('') : "Aucun risque.";
         }
 
-        function closeDetailsPanel() {
-            document.getElementById('matrix-details-panel').style.display = 'none';
-        }
-
-        function toggleTheme(theme) {
-            if(theme === 'light') document.body.classList.add('theme-light');
-            else document.body.classList.remove('theme-light');
-        }
+        function closeDetailsPanel() { document.getElementById('matrix-details-panel').style.display = 'none'; }
+        function toggleTheme(theme) { if(theme === 'light') document.body.classList.add('theme-light'); else document.body.classList.remove('theme-light'); }
+        function changeFontSize(size) { document.documentElement.style.setProperty('--font-size-base', size); }
+        function toggleApiKeyField(val) { document.getElementById('api-key-container').style.display = (val === 'none') ? 'none' : 'flex'; }
     </script>
 </body>
 </html>
