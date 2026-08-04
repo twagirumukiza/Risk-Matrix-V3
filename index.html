@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Matrix AI - V3.4</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-card: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --font-size-base: 14px;
+            --sidebar-width: 280px;
+        }
+
+        body.theme-light {
+            --bg-main: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: var(--font-size-base); }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+
+        #landing-view {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-main); z-index: 9999;
+            display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; padding: 40px;
+        }
+        .landing-hero { max-width: 800px; margin: auto; text-align: center; display: flex; flex-direction: column; gap: 20px; padding: 40px 0; }
+        .landing-hero h1 { font-size: 2.5rem; line-height: 1.2; }
+        .landing-hero h1 span { color: var(--accent); }
+        .landing-hero p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
+
+        #app-container { display: none; width: 100%; min-height: 100vh; }
+
+        sidebar { width: var(--sidebar-width); background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; position: fixed; top: 0; bottom: 0; left: 0; transition: width 0.3s; z-index: 100; }
+        sidebar.collapsed { width: 70px; }
+        sidebar.collapsed .logo-text, sidebar.collapsed .nav-links span, sidebar.collapsed .sidebar-footer { display: none; }
+        sidebar.collapsed .logo-area { justify-content: center; padding: 20px 10px; }
+        sidebar.collapsed .nav-links li { justify-content: center; padding: 12px; }
+
+        .sidebar-top { display: flex; flex-direction: column; }
+        .logo-area { padding: 20px; font-size: 1.25rem; font-weight: bold; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .logo-main { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-area span.badge { background: var(--accent); color: white; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
+        
+        .nav-links { list-style: none; padding: 20px 10px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-links li { padding: 12px 15px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+        .nav-links li:hover, .nav-links li.active { background-color: var(--accent); color: white; }
+
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+
+        main { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; transition: margin-left 0.3s; }
+        main.expanded { margin-left: 70px; }
+        
+        header.topbar { padding: 20px 30px; border-bottom: 1px solid var(--border); background-color: var(--bg-main); display: flex; justify-content: space-between; align-items: center; }
+        header.topbar h1 { font-size: 1.5rem; margin-bottom: 5px; }
+
+        .content-area { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 25px; }
+        .view-section { display: none; flex-direction: column; gap: 25px; }
+        .view-section.active-view { display: flex; }
+
+        .wizard-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; display: flex; flex-direction: column; gap: 25px; }
+        .wizard-step-content { display: none; flex-direction: column; gap: 20px; }
+        .wizard-step-content.active-step { display: flex; }
+        
+        .category-box { background: var(--bg-main); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 15px; }
+        .category-box h4 { color: var(--accent); margin-bottom: 12px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; user-select: none; }
+        .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+        .custom-input-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .input-text, .select-val { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; width: 100%; }
+        
+        .btn { background: var(--accent); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+        .btn:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); }
+        .btn-lg { padding: 14px 28px; font-size: 1rem; border-radius: 10px; }
+        .btn-ai { background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; }
+
+        .dashboard-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .card-stat { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
+        .card-stat h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        .card-stat .number { font-size: 1.8rem; font-weight: bold; }
+
+        /* Styles Vue Graphique */
+        .risk-score-card { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px; }
+        .risk-score-item { display: flex; flex-direction: column; gap: 5px; padding: 10px; background: var(--bg-main); border-radius: 8px; border: 1px solid var(--border); }
+        .risk-score-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+        .risk-bar-container { display: flex; align-items: center; gap: 15px; }
+        .risk-progress-bar { font-family: monospace; font-size: 1.1rem; letter-spacing: 1px; color: var(--accent); }
+
+        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .matrix-cell { background: var(--bg-main); border: 1px solid var(--border); height: 105px; border-radius: 6px; padding: 8px; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+        .matrix-cell:hover { border-color: var(--accent); transform: scale(1.02); }
+        .matrix-cell.risk-high { background-color: rgba(239, 68, 68, 0.25); border-color: var(--danger); }
+        .matrix-cell.risk-med { background-color: rgba(245, 158, 11, 0.25); border-color: var(--warning); }
+        .matrix-cell.risk-low { background-color: rgba(16, 185, 129, 0.25); border-color: var(--success); }
+        .matrix-cell-content { font-weight: bold; color: var(--text-main); font-size: 0.8rem; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+        .table-container { width: 100%; overflow-x: auto; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { background: rgba(255,255,255,0.02); color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <!-- LANDING PAGE -->
+    <div id="landing-view">
+        <div style="font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+            Risk Matrix AI <span class="badge" style="background:var(--accent); color:white; padding:2px 6px; border-radius:4px; font-size:0.75rem;">V3.4</span>
+        </div>
+        <div class="landing-hero">
+            <h1>Sécurisez votre foyer numérique <span>intelligemment</span></h1>
+            <p>Construisez votre foyer, pilotez votre matrice interactive et gérez votre registre de risques.</p>
+            <div><button class="btn btn-lg" onclick="launchApp()">Lancer l'outil</button></div>
+        </div>
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">by twagirumukiza</div>
+    </div>
+
+    <!-- APPLICATION PRINCIPALE -->
+    <div id="app-container">
+        <sidebar id="main-sidebar">
+            <div class="sidebar-top">
+                <div class="logo-area">
+                    <div class="logo-main" onclick="returnToLanding()">
+                        <span>🛡️</span> <span class="logo-text">Risk Matrix <span class="badge">V3.4</span></span>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75rem;" onclick="toggleSidebar()" title="Réduire / Agrandir le menu">↔</button>
+                </div>
+                <ul class="nav-links">
+                    <li id="nav-wizard" class="active" onclick="switchView('wizard')">🌐 <span>Cartographiez vos risques</span></li>
+                    <li id="nav-graphic" onclick="switchView('graphic')">📈 <span>Vue Graphique & Scores</span></li>
+                    <li id="nav-dashboard" onclick="switchView('dashboard')">📊 <span>Tableau de Bord & Matrice</span></li>
+                    <li id="nav-register" onclick="switchView('register')">📋 <span>Registre des Risques</span></li>
+                    <li id="nav-policy" onclick="switchView('policy')">🤖 <span>Politique & Assistant IA</span></li>
+                    <li id="nav-settings" onclick="switchView('settings')">⚙️ <span>Paramètres</span></li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">by twagirumukiza</div>
+        </sidebar>
+
+        <main id="main-content">
+            <header class="topbar">
+                <div>
+                    <h1 id="page-title">Cartographiez vos risques</h1>
+                    <p id="page-subtitle" style="color:var(--text-muted); font-size:0.9rem;">Parcours guidé de construction du foyer numérique.</p>
+                </div>
+                <button class="btn btn-secondary" onclick="toggleSidebar()">☰ Menu</button>
+            </header>
+
+            <div class="content-area">
+                
+                <!-- VUE WIZARD -->
+                <div id="view-wizard" class="view-section active-view">
+                    <div class="wizard-container">
+                        <div id="w-step-1" class="wizard-step-content active-step">
+                            <h3 style="color: var(--accent);">Étape 1 – Construisez votre foyer numérique</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Cochez simplement ce que vous possédez ou ajoutez vos équipements personnalisés.</p>
+                            
+                            <div class="category-box">
+                                <h4>🌐 Réseau</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label"><input type="checkbox" checked> Box Internet</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Routeur Wi-Fi</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Répéteur Wi-Fi</label>
+                                    <label class="checkbox-label"><input type="checkbox"> CPL</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Pare-feu personnel</label>
+                                </div>
+                                <div class="custom-input-row">
+                                    <input type="text" class="input-text" id="custom-network" placeholder="+ Autre équipement réseau...">
+                                    <button class="btn btn-secondary" onclick="addCustomItem('network')">➕ Ajouter</button>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>💻 Ordinateurs</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label"><input type="checkbox" checked> PC Windows</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Mac</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Linux</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Chromebook</label>
+                                </div>
+                                <div class="custom-input-row">
+                                    <input type="text" class="input-text" id="custom-computer" placeholder="+ Autre ordinateur...">
+                                    <button class="btn btn-secondary" onclick="addCustomItem('computer')">➕ Ajouter</button>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>📱 Appareils mobiles</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label"><input type="checkbox" checked> Smartphone Android</label>
+                                    <label class="checkbox-label"><input type="checkbox"> iPhone</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Tablette Android</label>
+                                    <label class="checkbox-label"><input type="checkbox"> iPad</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Montre connectée</label>
+                                </div>
+                                <div class="custom-input-row">
+                                    <input type="text" class="input-text" id="custom-mobile" placeholder="+ Autre appareil mobile...">
+                                    <button class="btn btn-secondary" onclick="addCustomItem('mobile')">➕ Ajouter</button>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>📺 Maison connectée</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label"><input type="checkbox" checked> Smart TV</label>
+                                    <label class="checkbox-label"><input type="checkbox" checked> Caméra IP</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Sonnette connectée</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Alexa</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Google Home</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Thermostat</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Ampoules connectées</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Prises connectées</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Aspirateur robot</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Serrure connectée</label>
+                                </div>
+                                <div class="custom-input-row">
+                                    <input type="text" class="input-text" id="custom-home" placeholder="+ Autre objet connecté...">
+                                    <button class="btn btn-secondary" onclick="addCustomItem('home')">➕ Ajouter</button>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>🎮 Loisirs</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label"><input type="checkbox"> PlayStation</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Xbox</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Nintendo Switch</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Steam Deck</label>
+                                </div>
+                                <div class="custom-input-row">
+                                    <input type="text" class="input-text" id="custom-gaming" placeholder="+ Autre console / loisir...">
+                                    <button class="btn btn-secondary" onclick="addCustomItem('gaming')">➕ Ajouter</button>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>☁️ Comptes importants</h4>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-label"><input type="checkbox"> Gmail</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Outlook</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Apple ID</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Microsoft</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Banque en ligne</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Assurance</label>
+                                    <label class="checkbox-label"><input type="checkbox"> CAF</label>
+                                    <label class="checkbox-label"><input type="checkbox"> France Identité</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Impôts</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Amazon</label>
+                                    <label class="checkbox-label"><input type="checkbox"> PayPal</label>
+                                </div>
+                                <div class="custom-input-row">
+                                    <input type="text" class="input-text" id="custom-accounts" placeholder="+ Autre compte important...">
+                                    <button class="btn btn-secondary" onclick="addCustomItem('accounts')">➕ Ajouter</button>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn btn-lg" onclick="switchView('graphic')">Voir la Vue Graphique & Scores →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VUE GRAPHIQUE & RISK SCORES -->
+                <div id="view-graphic" class="view-section">
+                    <div class="risk-score-card">
+                        <h3>Cartographie visuelle – Risk Scores par Actif</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Évaluation dynamique des risques par équipement critique de votre foyer.</p>
+                        
+                        <div class="risk-score-item">
+                            <div class="risk-score-header">
+                                <span>📱 Smartphone</span>
+                                <span style="color: var(--danger);">98 %</span>
+                            </div>
+                            <div class="risk-bar-container">
+                                <span class="risk-progress-bar">██████████</span>
+                            </div>
+                        </div>
+
+                        <div class="risk-score-item">
+                            <div class="risk-score-header">
+                                <span>🌐 Box Internet</span>
+                                <span style="color: var(--warning);">83 %</span>
+                            </div>
+                            <div class="risk-bar-container">
+                                <span class="risk-progress-bar">████████░░</span>
+                            </div>
+                        </div>
+
+                        <div class="risk-score-item">
+                            <div class="risk-score-header">
+                                <span>📷 Caméra</span>
+                                <span style="color: var(--warning);">72 %</span>
+                            </div>
+                            <div class="risk-bar-container">
+                                <span class="risk-progress-bar">███████░░░</span>
+                            </div>
+                        </div>
+
+                        <div class="risk-score-item">
+                            <div class="risk-score-header">
+                                <span>📺 TV</span>
+                                <span style="color: var(--success);">28 %</span>
+                            </div>
+                            <div class="risk-bar-container">
+                                <span class="risk-progress-bar">███░░░░░░░</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                            <button class="btn btn-secondary" onclick="switchView('wizard')">← Retour au foyer</button>
+                            <button class="btn btn-lg" onclick="switchView('dashboard')">Voir la Matrice de Criticité →</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VUE TABLEAU DE BORD & MATRICE INTERACTIVE -->
+                <div id="view-dashboard" class="view-section">
+                    <div class="dashboard-cards">
+                        <div class="card-stat"><h3>Total Risques</h3><div class="number" id="stat-total">0</div></div>
+                        <div class="card-stat"><h3>Critiques / Élevés</h3><div class="number" style="color: var(--danger);" id="stat-critical">0</div></div>
+                        <div class="card-stat"><h3>Moyens</h3><div class="number" style="color: var(--warning);" id="stat-medium">0</div></div>
+                        <div class="card-stat"><h3>Faibles</h3><div class="number" style="color: var(--success);" id="stat-low">0</div></div>
+                    </div>
+                    
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px;">
+                        <h3>Matrice de Criticité 5×5 (Cliquez sur une case pour voir les détails)</h3>
+                        <div class="matrix-grid" id="matrix-container" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <!-- Panneau de détails dynamique -->
+                    <div id="matrix-details-panel" style="display: none; background: var(--bg-card); border: 1px solid var(--accent); padding: 20px; border-radius: 12px; gap: 15px; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4 id="details-title" style="color: var(--accent);">Détails de la case</h4>
+                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="closeDetailsPanel()">Fermer</button>
+                        </div>
+                        <div id="details-content" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                    </div>
+                </div>
+
+                <!-- VUE REGISTRE DES RISQUES -->
+                <div id="view-register" class="view-section">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Actif</th>
+                                    <th>Risque</th>
+                                    <th>Prob. (1-5)</th>
+                                    <th>Impact (1-5)</th>
+                                    <th>Criticité</th>
+                                    <th>Plan de Prévention</th>
+                                    <th>Plan de Continuité</th>
+                                    <th>PRA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="risk-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VUE POLITIQUE & ASSISTANT IA -->
+                <div id="view-policy" class="view-section">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 20px;">
+                        <h3>Politique & Assistant IA</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Paramétrage des seuils et évaluation contextuelle.</p>
+                        
+                        <div class="category-box">
+                            <h4 style="color: var(--accent); margin-bottom: 10px;">Paramétrage de la Politique de Risque (Seuils)</h4>
+                            <div style="display: flex; gap: 20px;">
+                                <div>
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Critique / Élevé :</label>
+                                    <input type="number" class="input-text" value="12" style="width: 120px;">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Moyen :</label>
+                                    <input type="number" class="input-text" value="6" style="width: 120px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="category-box">
+                            <h4 style="color: var(--accent); margin-bottom: 10px;">Soumettre un Scénario de Menace</h4>
+                            <input type="text" class="input-text" placeholder="Ex: Attaque par ransomware...">
+                            <button class="btn btn-ai" style="margin-top: 15px;">Analyser et intégrer au registre</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VUE PARAMÈTRES -->
+                <div id="view-settings" class="view-section">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 20px;">
+                        <h3>Paramètres</h3>
+                        <div style="border-top: 1px solid var(--border); padding-top: 15px;">
+                            <h4 style="margin-bottom: 10px;">Thème</h4>
+                            <select class="select-val" style="max-width:250px;" onchange="toggleTheme(this.value)">
+                                <option value="dark">Sombre (Dark)</option>
+                                <option value="light">Clair (Light)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let risksData = [
+            { asset: "Smartphone Android", title: "Vol ou compromission de données", prob: 4, impact: 5, prev: "Configuré", cont: "Configuré", pra: "Non applicable" },
+            { asset: "Caméra IP", title: "Accès non autorisé au flux", prob: 3, impact: 4, prev: "Configuré", cont: "En cours", pra: "Configuré" },
+            { asset: "Box Internet", title: "Exposition de services", prob: 2, impact: 3, prev: "Configuré", cont: "Non applicable", pra: "Configuré" }
+        ];
+
+        function launchApp() {
+            document.getElementById('landing-view').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+        }
+        function returnToLanding() {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('landing-view').style.display = 'flex';
+        }
+        function toggleSidebar() {
+            const sidebar = document.getElementById('main-sidebar');
+            const main = document.getElementById('main-content');
+            sidebar.classList.toggle('collapsed');
+            main.classList.toggle('expanded');
+        }
+        function switchView(viewName) {
+            document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+
+            if(viewName === 'wizard') {
+                document.getElementById('nav-wizard').classList.add('active');
+                document.getElementById('view-wizard').classList.add('active-view');
+            } else if(viewName === 'graphic') {
+                document.getElementById('nav-graphic').classList.add('active');
+                document.getElementById('view-graphic').classList.add('active-view');
+            } else if(viewName === 'dashboard') {
+                document.getElementById('nav-dashboard').classList.add('active');
+                document.getElementById('view-dashboard').classList.add('active-view');
+                renderDashboardAndMatrix();
+            } else if(viewName === 'register') {
+                document.getElementById('nav-register').classList.add('active');
+                document.getElementById('view-register').classList.add('active-view');
+                renderRegisterTable();
+            } else if(viewName === 'policy') {
+                document.getElementById('nav-policy').classList.add('active');
+                document.getElementById('view-policy').classList.add('active-view');
+            } else if(viewName === 'settings') {
+                document.getElementById('nav-settings').classList.add('active');
+                document.getElementById('view-settings').classList.add('active-view');
+            }
+        }
+
+        function addCustomItem(category) {
+            const input = document.getElementById(`custom-${category}`);
+            if(input && input.value.trim() !== '') {
+                alert(`Équipement "${input.value.trim()}" ajouté avec succès !`);
+                input.value = '';
+            }
+        }
+
+        function updateRiskValue(index, field, value) { risksData[index][field] = parseInt(value); renderRegisterTable(); }
+
+        function renderRegisterTable() {
+            const tbody = document.getElementById('risk-table-body');
+            tbody.innerHTML = risksData.map((r, index) => {
+                let score = r.prob * r.impact;
+                let critLabel = score >= 12 ? 'Critique / Élevé' : (score >= 6 ? 'Moyen' : 'Faible');
+                let color = score >= 12 ? 'var(--danger)' : (score >= 6 ? 'var(--warning)' : 'var(--success)');
+
+                return `
+                    <tr>
+                        <td><strong>${r.asset}</strong></td>
+                        <td>${r.title}</td>
+                        <td>
+                            <select class="select-val" style="width:70px;" onchange="updateRiskValue(${index}, 'prob', this.value)">
+                                ${[1,2,3,4,5].map(v => `<option value="${v}" ${v===r.prob?'selected':''}>${v}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td>
+                            <select class="select-val" style="width:70px;" onchange="updateRiskValue(${index}, 'impact', this.value)">
+                                ${[1,2,3,4,5].map(v => `<option value="${v}" ${v===r.impact?'selected':''}>${v}</option>`).join('')}
+                            </select>
+                        </td>
+                        <td><span style="color:${color}; font-weight:bold;">${critLabel} (${score})</span></td>
+                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].prev = this.value"><option ${r.prev==='Configuré'?'selected':''}>Configuré</option><option ${r.prev==='En cours'?'selected':''}>En cours</option><option ${r.prev==='Non applicable'?'selected':''}>Non applicable</option></select></td>
+                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].cont = this.value"><option ${r.cont==='Configuré'?'selected':''}>Configuré</option><option ${r.cont==='En cours'?'selected':''}>En cours</option><option ${r.cont==='Non applicable'?'selected':''}>Non applicable</option></select></td>
+                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].pra = this.value"><option ${r.pra==='Configuré'?'selected':''}>Configuré</option><option ${r.pra==='En cours'?'selected':''}>En cours</option><option ${r.pra==='Non applicable'?'selected':''}>Non applicable</option></select></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderDashboardAndMatrix() {
+            let total = risksData.length;
+            let critical = risksData.filter(r => (r.prob * r.impact) >= 12).length;
+            let medium = risksData.filter(r => (r.prob * r.impact) >= 6 && (r.prob * r.impact) < 12).length;
+            let low = risksData.filter(r => (r.prob * r.impact) < 6).length;
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-critical').textContent = critical;
+            document.getElementById('stat-medium').textContent = medium;
+            document.getElementById('stat-low').textContent = low;
+
+            const container = document.getElementById('matrix-container');
+            container.innerHTML = '';
+            for (let y = 5; y >= 1; y--) {
+                for (let x = 1; x <= 5; x++) {
+                    let score = x * y;
+                    let cellClass = 'risk-low';
+                    if (score >= 12) cellClass = 'risk-high';
+                    else if (score >= 6) cellClass = 'risk-med';
+
+                    let cellRisks = risksData.filter(r => r.prob === x && r.impact === y);
+
+                    let cellDiv = document.createElement('div');
+                    cellDiv.className = `matrix-cell ${cellClass}`;
+                    cellDiv.onclick = () => showCellDetails(x, y, cellRisks);
+                    cellDiv.innerHTML = `
+                        <span>P:${x} I:${y}</span>
+                        <div>
+                            ${cellRisks.map(r => `<div class="matrix-cell-content">• ${r.title}</div>`).join('')}
+                        </div>
+                    `;
+                    container.appendChild(cellDiv);
+                }
+            }
+        }
+
+        function showCellDetails(x, y, risks) {
+            const panel = document.getElementById('matrix-details-panel');
+            const title = document.getElementById('details-title');
+            const content = document.getElementById('details-content');
+
+            panel.style.display = 'flex';
+            title.textContent = `Détails de la case — Probabilité : ${x} | Impact : ${y}`;
+
+            if(risks.length === 0) {
+                content.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aucun risque enregistré pour cette position.</p>`;
+            } else {
+                content.innerHTML = risks.map(r => `
+                    <div style="background:var(--bg-main); border:1px solid var(--border); padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${r.title}</strong>
+                            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Actif : ${r.asset} | Score : ${r.prob * r.impact}</p>
+                        </div>
+                        <button class="btn" onclick="switchView('register')">Voir dans le registre</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function closeDetailsPanel() {
+            document.getElementById('matrix-details-panel').style.display = 'none';
+        }
+
+        function toggleTheme(theme) {
+            if(theme.includes('Clair')) document.body.classList.add('theme-light');
+            else document.body.classList.remove('theme-light');
+        }
+    </script>
+</body>
+</html>
