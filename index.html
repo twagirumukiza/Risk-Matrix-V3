@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Risk Matrix AI - V3.2</title>
+    <title>Risk Matrix AI - V3.3</title>
     <style>
         :root {
             --bg-main: #0f172a;
@@ -94,10 +94,12 @@
         .card-stat .number { font-size: 1.8rem; font-weight: bold; }
 
         .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-        .matrix-cell { background: var(--bg-main); border: 1px solid var(--border); height: 90px; border-radius: 6px; padding: 8px; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; }
+        .matrix-cell { background: var(--bg-main); border: 1px solid var(--border); height: 105px; border-radius: 6px; padding: 8px; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: 0.2s; }
+        .matrix-cell:hover { border-color: var(--accent); transform: scale(1.02); }
         .matrix-cell.risk-high { background-color: rgba(239, 68, 68, 0.25); border-color: var(--danger); }
         .matrix-cell.risk-med { background-color: rgba(245, 158, 11, 0.25); border-color: var(--warning); }
         .matrix-cell.risk-low { background-color: rgba(16, 185, 129, 0.25); border-color: var(--success); }
+        .matrix-cell-content { font-weight: bold; color: var(--text-main); font-size: 0.8rem; margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 
         .table-container { width: 100%; overflow-x: auto; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; min-width: 1200px; }
@@ -110,11 +112,11 @@
     <!-- LANDING PAGE -->
     <div id="landing-view">
         <div style="font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
-            Risk Matrix AI <span>V3.2</span>
+            Risk Matrix AI <span>V3.3</span>
         </div>
         <div class="landing-hero">
             <h1>Sécurisez votre foyer numérique <span>intelligemment</span></h1>
-            <p>Construisez votre foyer, ajustez vos paramètres et pilotez votre registre de risques dynamique.</p>
+            <p>Construisez votre foyer, pilotez votre matrice interactive et gérez votre registre de risques.</p>
             <div><button class="btn btn-lg" onclick="launchApp()">Lancer l'outil</button></div>
         </div>
         <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem;">by twagirumukiza</div>
@@ -124,7 +126,7 @@
     <div id="app-container">
         <sidebar>
             <div class="sidebar-top">
-                <div class="logo-area" style="cursor: pointer;" onclick="returnToLanding()">Risk Matrix <span>V3.2</span></div>
+                <div class="logo-area" style="cursor: pointer;" onclick="returnToLanding()">Risk Matrix <span>V3.3</span></div>
                 <ul class="nav-links">
                     <li id="nav-wizard" class="active" onclick="switchView('wizard')">🌐 Cartographiez vos risques</li>
                     <li id="nav-dashboard" onclick="switchView('dashboard')">📊 Tableau de Bord & Matrice</li>
@@ -144,11 +146,9 @@
 
             <div class="content-area">
                 
-                <!-- VUE WIZARD (Étapes 1 & 2) -->
+                <!-- VUE WIZARD -->
                 <div id="view-wizard" class="view-section active-view">
                     <div class="wizard-container">
-                        
-                        <!-- ÉTAPE 1 : Foyer Numérique Complet -->
                         <div id="w-step-1" class="wizard-step-content active-step">
                             <h3 style="color: var(--accent);">Étape 1 – Construisez votre foyer numérique</h3>
                             <p style="color: var(--text-muted); font-size: 0.9rem;">Cochez simplement ce que vous possédez.</p>
@@ -170,7 +170,6 @@
                                     <label class="checkbox-label"><input type="checkbox" checked> PC Windows</label>
                                     <label class="checkbox-label"><input type="checkbox"> Mac</label>
                                     <label class="checkbox-label"><input type="checkbox"> Linux</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Chromebook</label>
                                 </div>
                             </div>
 
@@ -179,70 +178,15 @@
                                 <div class="checkbox-grid">
                                     <label class="checkbox-label"><input type="checkbox" checked> Smartphone Android</label>
                                     <label class="checkbox-label"><input type="checkbox"> iPhone</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Tablette Android</label>
-                                    <label class="checkbox-label"><input type="checkbox"> iPad</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Montre connectée</label>
                                 </div>
                             </div>
 
                             <div class="category-box">
                                 <h4>📺 Maison connectée</h4>
                                 <div class="checkbox-grid">
-                                    <label class="checkbox-label"><input type="checkbox"> Smart TV</label>
                                     <label class="checkbox-label"><input type="checkbox" checked> Caméra IP</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Sonnette connectée</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Alexa</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Google Home</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Thermostat</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Ampoules connectées</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Prises connectées</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Aspirateur robot</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Serrure connectée</label>
+                                    <label class="checkbox-label"><input type="checkbox"> Smart TV</label>
                                 </div>
-                            </div>
-
-                            <div class="category-box">
-                                <h4>🎮 Loisirs</h4>
-                                <div class="checkbox-grid">
-                                    <label class="checkbox-label"><input type="checkbox"> PlayStation</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Xbox</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Nintendo Switch</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Steam Deck</label>
-                                </div>
-                            </div>
-
-                            <div class="category-box">
-                                <h4>☁️ Comptes importants</h4>
-                                <div class="checkbox-grid">
-                                    <label class="checkbox-label"><input type="checkbox" checked> Gmail</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Outlook</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Apple ID</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Microsoft</label>
-                                    <label class="checkbox-label"><input type="checkbox" checked> Banque en ligne</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Assurance</label>
-                                    <label class="checkbox-label"><input type="checkbox"> CAF</label>
-                                    <label class="checkbox-label"><input type="checkbox"> France Identité</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Impôts</label>
-                                    <label class="checkbox-label"><input type="checkbox"> Amazon</label>
-                                    <label class="checkbox-label"><input type="checkbox"> PayPal</label>
-                                </div>
-                            </div>
-
-                            <!-- ÉTAPE 2 : Actif personnalisé -->
-                            <div class="category-box" style="border-color: var(--accent);">
-                                <h4>➕ Étape 2 – Ajouter un actif personnalisé</h4>
-                                <div class="custom-asset-row">
-                                    <input type="text" id="custom-asset-name" class="input-text" placeholder="Nom (ex: NAS Synology)">
-                                    <select id="custom-asset-cat" class="select-val" style="max-width: 180px;">
-                                        <option value="Réseau">Réseau</option>
-                                        <option value="Ordinateur">Ordinateur</option>
-                                        <option value="IoT">IoT</option>
-                                        <option value="Compte">Compte</option>
-                                        <option value="Autre">Autre</option>
-                                    </select>
-                                    <button class="btn" onclick="addCustomAsset()">➕ Ajouter un équipement</button>
-                                </div>
-                                <div id="custom-assets-list" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"></div>
                             </div>
 
                             <div style="display: flex; justify-content: flex-end;">
@@ -250,22 +194,18 @@
                             </div>
                         </div>
 
-                        <!-- ÉTAPE 3 : Questions Oui/Non -->
                         <div id="w-step-2" class="wizard-step-content">
-                            <h3 style="color: var(--accent);">Étape 3 – Questions intelligentes (Oui / Non)</h3>
-                            <div id="questions-yes-no-container" class="category-box">
-                                <!-- Rempli dynamiquement -->
-                            </div>
+                            <h3 style="color: var(--accent);">Étape 2 – Questions intelligentes (Oui / Non)</h3>
+                            <div id="questions-yes-no-container" class="category-box"></div>
                             <div style="display: flex; justify-content: space-between;">
                                 <button class="btn btn-secondary" onclick="goToStep(1)">← Précédent</button>
                                 <button class="btn btn-lg btn-ai" onclick="generateMatrixFromWizard()">✨ Générer la Matrice & le Registre</button>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
-                <!-- VUE TABLEAU DE BORD -->
+                <!-- VUE TABLEAU DE BORD & MATRICE INTERACTIVE -->
                 <div id="view-dashboard" class="view-section">
                     <div class="dashboard-cards">
                         <div class="card-stat"><h3>Total Risques</h3><div class="number" id="stat-total">0</div></div>
@@ -273,9 +213,19 @@
                         <div class="card-stat"><h3>Moyens</h3><div class="number" style="color: var(--warning);" id="stat-medium">0</div></div>
                         <div class="card-stat"><h3>Faibles</h3><div class="number" style="color: var(--success);" id="stat-low">0</div></div>
                     </div>
+                    
                     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px;">
-                        <h3>Matrice de Criticité 5×5 (Dynamique)</h3>
+                        <h3>Matrice de Criticité 5×5 (Cliquez sur une case pour voir les détails)</h3>
                         <div class="matrix-grid" id="matrix-container" style="margin-top: 15px;"></div>
+                    </div>
+
+                    <!-- Panneau de détails dynamique -->
+                    <div id="matrix-details-panel" style="display: none; background: var(--bg-card); border: 1px solid var(--accent); padding: 20px; border-radius: 12px; gap: 15px; flex-direction: column;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <h4 id="details-title" style="color: var(--accent);">Détails de la case</h4>
+                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="closeDetailsPanel()">Fermer</button>
+                        </div>
+                        <div id="details-content" style="display: flex; flex-direction: column; gap: 10px;"></div>
                     </div>
                 </div>
 
@@ -308,26 +258,20 @@
                         
                         <div class="category-box">
                             <h4 style="color: var(--accent); margin-bottom: 10px;">Paramétrage de la Politique de Risque (Seuils)</h4>
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;">Modifiez le score minimum requis pour basculer un risque en zone moyenne ou élevée.</p>
                             <div style="display: flex; gap: 20px;">
                                 <div>
-                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Criticité / Élevé (Score min) :</label>
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Critique / Élevé :</label>
                                     <input type="number" class="input-text" value="12" style="width: 120px;">
                                 </div>
                                 <div>
-                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Moyen (Score min) :</label>
+                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px; font-size:0.85rem;">Seuil Moyen :</label>
                                     <input type="number" class="input-text" value="6" style="width: 120px;">
                                 </div>
                             </div>
                         </div>
 
                         <div class="category-box">
-                            <h4 style="color: var(--accent); margin-bottom: 10px;">1. Contexte de l'Entreprise / du Foyer</h4>
-                            <textarea class="input-text" rows="3" placeholder="Ex: Foyer connecté avec télétravail, NAS et caméras IP..."></textarea>
-                        </div>
-
-                        <div class="category-box">
-                            <h4 style="color: var(--accent); margin-bottom: 10px;">2. Soumettre un Scénario de Menace</h4>
+                            <h4 style="color: var(--accent); margin-bottom: 10px;">Soumettre un Scénario de Menace</h4>
                             <input type="text" class="input-text" placeholder="Ex: Attaque par ransomware...">
                             <button class="btn btn-ai" style="margin-top: 15px;">Analyser et intégrer au registre</button>
                         </div>
@@ -338,39 +282,11 @@
                 <div id="view-settings" class="view-section">
                     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px; display: flex; flex-direction: column; gap: 20px;">
                         <h3>Paramètres</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">Configuration de l'apparence et du fournisseur d'intelligence artificielle.</p>
-                        
                         <div style="border-top: 1px solid var(--border); padding-top: 15px;">
-                            <h4 style="margin-bottom: 10px;">Apparence & Affichage</h4>
-                            <div style="display: flex; gap: 20px;">
-                                <div>
-                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px;">Thème :</label>
-                                    <select class="select-val" onchange="toggleTheme(this.value)">
-                                        <option value="dark">Sombre (Dark)</option>
-                                        <option value="light">Clair (Light)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label style="color: var(--text-muted); display: block; margin-bottom: 5px;">Taille de police :</label>
-                                    <select class="select-val">
-                                        <option>Normale (14px)</option>
-                                        <option>Grande (16px)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="border-top: 1px solid var(--border); padding-top: 15px;">
-                            <h4 style="margin-bottom: 10px;">Fournisseur IA</h4>
-                            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px;">Choisissez avec quelle IA vous souhaitez travailler ou désactivez-la.</p>
-                            <select class="select-val" style="max-width: 350px;">
-                                <option>Sans IA</option>
-                                <option>Google Gemini</option>
-                                <option>OpenAI</option>
-                                <option>DeepSeek</option>
-                                <option>Groq</option>
-                                <option>Ollama (local)</option>
-                                <option>Anthropic (Claude)</option>
+                            <h4 style="margin-bottom: 10px;">Thème</h4>
+                            <select class="select-val" style="max-width:250px;" onchange="toggleTheme(this.value)">
+                                <option value="dark">Sombre (Dark)</option>
+                                <option value="light">Clair (Light)</option>
                             </select>
                         </div>
                     </div>
@@ -381,7 +297,6 @@
     </div>
 
     <script>
-        let customAssets = [];
         let risksData = [
             { asset: "Smartphone Android", title: "Vol ou compromission de données", prob: 4, impact: 5, prev: "Configuré", cont: "Configuré", pra: "Non applicable" },
             { asset: "Caméra IP", title: "Accès non autorisé au flux", prob: 3, impact: 4, prev: "Configuré", cont: "En cours", pra: "Configuré" },
@@ -426,24 +341,10 @@
             if(step === 2) buildYesNoQuestions();
         }
 
-        function addCustomAsset() {
-            const name = document.getElementById('custom-asset-name').value;
-            const cat = document.getElementById('custom-asset-cat').value;
-            if(!name) return;
-            customAssets.push({ name, cat });
-            document.getElementById('custom-asset-name').value = '';
-            renderCustomAssetsList();
-        }
-
-        function renderCustomAssetsList() {
-            const container = document.getElementById('custom-assets-list');
-            container.innerHTML = customAssets.map(a => `<span style="background:var(--bg-main); border:1px solid var(--border); padding:4px 10px; border-radius:6px; font-size:0.85rem;">${a.name} (${a.cat})</span>`).join('');
-        }
-
         function buildYesNoQuestions() {
             const container = document.getElementById('questions-yes-no-container');
             container.innerHTML = `
-                <h4 style="color:var(--accent); margin-bottom:15px;">Configuration spécifique des équipements sélectionnés</h4>
+                <h4 style="color:var(--accent); margin-bottom:15px;">Configuration spécifique</h4>
                 <div class="question-row">
                     <span>La caméra IP est-elle accessible directement depuis Internet ?</span>
                     <div class="yes-no-group">
@@ -451,33 +352,18 @@
                         <button class="yes-no-btn" onclick="toggleYesNo(this)">Non</button>
                     </div>
                 </div>
-                <div class="question-row">
-                    <span>Un mot de passe fort unique est-il configuré sur la Box Internet ?</span>
-                    <div class="yes-no-group">
-                        <button class="yes-no-btn" onclick="toggleYesNo(this)">Oui</button>
-                        <button class="yes-no-btn selected-no" onclick="toggleYesNo(this)">Non</button>
-                    </div>
-                </div>
             `;
         }
 
         function toggleYesNo(btn) {
             const group = btn.parentElement;
-            group.querySelectorAll('.yes-no-btn').forEach(b => {
-                b.classList.remove('selected-yes', 'selected-no');
-            });
+            group.querySelectorAll('.yes-no-btn').forEach(b => b.classList.remove('selected-yes', 'selected-no'));
             if(btn.textContent === 'Oui') btn.classList.add('selected-yes');
             else btn.classList.add('selected-no');
         }
 
-        function generateMatrixFromWizard() {
-            switchView('dashboard');
-        }
-
-        function updateRiskValue(index, field, value) {
-            risksData[index][field] = parseInt(value);
-            renderRegisterTable();
-        }
+        function generateMatrixFromWizard() { switchView('dashboard'); }
+        function updateRiskValue(index, field, value) { risksData[index][field] = parseInt(value); renderRegisterTable(); }
 
         function renderRegisterTable() {
             const tbody = document.getElementById('risk-table-body');
@@ -501,27 +387,9 @@
                             </select>
                         </td>
                         <td><span style="color:${color}; font-weight:bold;">${critLabel} (${score})</span></td>
-                        <td>
-                            <select class="select-val" style="width:130px;" onchange="risksData[${index}].prev = this.value">
-                                <option ${r.prev==='Configuré'?'selected':''}>Configuré</option>
-                                <option ${r.prev==='En cours'?'selected':''}>En cours</option>
-                                <option ${r.prev==='Non applicable'?'selected':''}>Non applicable</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="select-val" style="width:130px;" onchange="risksData[${index}].cont = this.value">
-                                <option ${r.cont==='Configuré'?'selected':''}>Configuré</option>
-                                <option ${r.cont==='En cours'?'selected':''}>En cours</option>
-                                <option ${r.cont==='Non applicable'?'selected':''}>Non applicable</option>
-                            </select>
-                        </td>
-                        <td>
-                            <select class="select-val" style="width:130px;" onchange="risksData[${index}].pra = this.value">
-                                <option ${r.pra==='Configuré'?'selected':''}>Configuré</option>
-                                <option ${r.pra==='En cours'?'selected':''}>En cours</option>
-                                <option ${r.pra==='Non applicable'?'selected':''}>Non applicable</option>
-                            </select>
-                        </td>
+                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].prev = this.value"><option ${r.prev==='Configuré'?'selected':''}>Configuré</option><option ${r.prev==='En cours'?'selected':''}>En cours</option><option ${r.prev==='Non applicable'?'selected':''}>Non applicable</option></select></td>
+                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].cont = this.value"><option ${r.cont==='Configuré'?'selected':''}>Configuré</option><option ${r.cont==='En cours'?'selected':''}>En cours</option><option ${r.cont==='Non applicable'?'selected':''}>Non applicable</option></select></td>
+                        <td><select class="select-val" style="width:130px;" onchange="risksData[${index}].pra = this.value"><option ${r.pra==='Configuré'?'selected':''}>Configuré</option><option ${r.pra==='En cours'?'selected':''}>En cours</option><option ${r.pra==='Non applicable'?'selected':''}>Non applicable</option></select></td>
                     </tr>
                 `;
             }).join('');
@@ -547,12 +415,47 @@
                     if (score >= 12) cellClass = 'risk-high';
                     else if (score >= 6) cellClass = 'risk-med';
 
+                    let cellRisks = risksData.filter(r => r.prob === x && r.impact === y);
+
                     let cellDiv = document.createElement('div');
                     cellDiv.className = `matrix-cell ${cellClass}`;
-                    cellDiv.innerHTML = `<span>P:${x} I:${y}</span> <strong>${score >= 12 ? 'Critique' : (score >= 6 ? 'Moyen' : 'Standard')}</strong>`;
+                    cellDiv.onclick = () => showCellDetails(x, y, cellRisks);
+                    cellDiv.innerHTML = `
+                        <span>P:${x} I:${y}</span>
+                        <div>
+                            ${cellRisks.map(r => `<div class="matrix-cell-content">• ${r.title}</div>`).join('')}
+                        </div>
+                    `;
                     container.appendChild(cellDiv);
                 }
             }
+        }
+
+        function showCellDetails(x, y, risks) {
+            const panel = document.getElementById('matrix-details-panel');
+            const title = document.getElementById('details-title');
+            const content = document.getElementById('details-content');
+
+            panel.style.display = 'flex';
+            title.textContent = `Détails de la case — Probabilité : ${x} | Impact : ${y}`;
+
+            if(risks.length === 0) {
+                content.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Aucun risque enregistré pour cette position.</p>`;
+            } else {
+                content.innerHTML = risks.map(r => `
+                    <div style="background:var(--bg-main); border:1px solid var(--border); padding:12px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${r.title}</strong>
+                            <p style="color:var(--text-muted); font-size:0.8rem; margin-top:4px;">Actif : ${r.asset} | Score : ${r.prob * r.impact}</p>
+                        </div>
+                        <button class="btn" onclick="switchView('register')">Voir dans le registre</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function closeDetailsPanel() {
+            document.getElementById('matrix-details-panel').style.display = 'none';
         }
 
         function toggleTheme(theme) {
