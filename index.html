@@ -1,1 +1,604 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Matrix AI - Cartographie & Gestion Intelligente des Risques V3.0</title>
+    <style>
+        :root {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-card: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --font-size-base: 14px;
+        }
 
+        body.theme-light {
+            --bg-main: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: var(--font-size-base); }
+        body { background-color: var(--bg-main); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; transition: background-color 0.3s, color 0.3s; }
+
+        #landing-view {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: var(--bg-main);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
+            padding: 40px;
+        }
+        .landing-hero {
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 40px 0;
+        }
+        .landing-hero h1 { font-size: 2.5rem; line-height: 1.2; }
+        .landing-hero h1 span { color: var(--accent); }
+        .landing-hero p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; }
+        
+        .landing-features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+            width: 100%;
+        }
+        .landing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+        }
+        .landing-card h3 { font-size: 1rem; margin-bottom: 8px; color: var(--accent); }
+        .landing-card p { font-size: 0.85rem; color: var(--text-muted); }
+
+        #app-container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; justify-content: space-between; position: fixed; top: 0; bottom: 0; left: 0; }
+        .sidebar-top { display: flex; flex-direction: column; }
+        .logo-area { padding: 20px; font-size: 1.25rem; font-weight: bold; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+        .logo-area span { background: var(--accent); color: white; font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
+        
+        .nav-links { list-style: none; padding: 20px 10px; display: flex; flex-direction: column; gap: 8px; }
+        .nav-links li { padding: 12px 15px; border-radius: 8px; cursor: pointer; color: var(--text-muted); font-size: 0.95rem; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .nav-links li:hover, .nav-links li.active { background-color: var(--accent); color: white; }
+
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+
+        main { flex: 1; margin-left: 280px; display: flex; flex-direction: column; min-height: 100vh; }
+        header.topbar { padding: 20px 30px; border-bottom: 1px solid var(--border); background-color: var(--bg-main); }
+        header.topbar h1 { font-size: 1.5rem; margin-bottom: 5px; }
+
+        .content-area { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 25px; }
+
+        .view-section { display: none; flex-direction: column; gap: 25px; }
+        .view-section.active-view { display: flex; }
+
+        /* Assistant Parcours Styles */
+        .wizard-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 30px; display: flex; flex-direction: column; gap: 25px; }
+        .wizard-step-content { display: none; flex-direction: column; gap: 20px; }
+        .wizard-step-content.active-step { display: flex; }
+        
+        .category-box { background: var(--bg-main); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 15px; }
+        .category-box h4 { color: var(--accent); margin-bottom: 12px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer; user-select: none; }
+        .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+        .custom-asset-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; }
+        .input-text, .select-val { background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); padding: 10px 14px; border-radius: 8px; font-size: 0.9rem; width: 100%; }
+        .input-text:focus, .select-val:focus { outline: none; border-color: var(--accent); }
+
+        .btn { background: var(--accent); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; }
+        .btn:hover { background: var(--accent-hover); }
+        .btn-secondary { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); }
+        .btn-secondary:hover { background: var(--border); }
+        .btn-lg { padding: 14px 28px; font-size: 1rem; border-radius: 10px; }
+        .btn-ai { background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; }
+
+        /* Graphique Foyer & Risk Score */
+        .home-graph-container { display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 20px; background: var(--bg-main); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+        .graph-node { background: var(--bg-card); border: 2px solid var(--border); padding: 12px 24px; border-radius: 10px; font-weight: bold; display: inline-block; }
+        .graph-node.internet { border-color: var(--accent); color: var(--accent); }
+        .graph-node.box { border-color: var(--warning); }
+        .graph-line { width: 2px; height: 30px; background: var(--border); margin: 0 auto; }
+        .graph-row { display: flex; justify-content: center; gap: 30px; width: 100%; flex-wrap: wrap; }
+
+        .risk-score-card { background: var(--bg-card); border: 1px solid var(--border); padding: 16px 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 10px; cursor: pointer; transition: 0.2s; }
+        .risk-score-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .score-bar-bg { width: 100%; height: 8px; background: var(--bg-main); border-radius: 4px; overflow: hidden; }
+        .score-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+
+        /* Dashboard & Matrices existantes */
+        .dashboard-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        .card-stat { background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; }
+        .card-stat h3 { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        .card-stat .number { font-size: 1.8rem; font-weight: bold; }
+
+        .matrix-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+        .matrix-cell { background: var(--bg-main); border: 1px solid var(--border); height: 90px; border-radius: 6px; padding: 8px; font-size: 0.75rem; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
+        .matrix-cell.risk-high { background-color: rgba(239, 68, 68, 0.25); border-color: var(--danger); }
+        .matrix-cell.risk-med { background-color: rgba(245, 158, 11, 0.25); border-color: var(--warning); }
+        .matrix-cell.risk-low { background-color: rgba(16, 185, 129, 0.25); border-color: var(--success); }
+
+        .table-container { width: 100%; overflow-x: auto; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { background: rgba(255,255,255,0.02); color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <!-- LANDING PAGE -->
+    <div id="landing-view">
+        <div style="text-align: left; font-weight: bold; font-size: 1.2rem; display: flex; align-items: center; gap: 10px;">
+            Risk Matrix AI <span>V3.0</span>
+        </div>
+
+        <div class="landing-hero">
+            <h1>Sécurisez votre foyer numérique <span>sans effort</span></h1>
+            <p>Construisez simplement votre environnement numérique. L'application cartographie vos équipements, analyse vos risques en arrière-plan, calcule vos scores et génère vos plans d'action automatiquement.</p>
+            <div>
+                <button class="btn btn-lg" onclick="launchAppFromLanding()">Lancer l'outil gratuitement (Sans inscription)</button>
+            </div>
+        </div>
+
+        <div class="landing-features">
+            <div class="landing-card">
+                <h3>1. Foyer Intuitif</h3>
+                <p>Cochez vos équipements et comptes en quelques clics, sans jargon technique.</p>
+            </div>
+            <div class="landing-card">
+                <h3>2. Analyse Automatique</h3>
+                <p>L'IA analyse les dépendances, les scénarios d'attaque et calcule le Risk Score par actif.</p>
+            </div>
+            <div class="landing-card">
+                <h3>3. Matrice de Risque Finale</h3>
+                <p>Visualisez la cartographie globale et pilotez vos priorités de traitement en toute simplicité.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding-bottom: 20px;">
+            by twagirumukiza
+        </div>
+    </div>
+
+    <!-- APPLICATION PRINCIPALE -->
+    <div id="app-container">
+        <sidebar>
+            <div class="sidebar-top">
+                <div class="logo-area" style="cursor: pointer;" onclick="returnToLanding()" title="Retour à l'accueil">Risk Matrix AI <span>V3.0</span></div>
+                <ul class="nav-links">
+                    <li id="nav-wizard" class="active" onclick="switchView('wizard')">🌐 Cartographiez vos risques</li>
+                    <li id="nav-dashboard" onclick="switchView('dashboard')">📊 Tableau de Bord & Matrice</li>
+                    <li id="nav-register" onclick="switchView('register')">📋 Registre des Risques</li>
+                    <li id="nav-settings" onclick="switchView('settings')">⚙️ Paramètres</li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                by twagirumukiza
+            </div>
+        </sidebar>
+
+        <main>
+            <header class="topbar">
+                <h1 id="page-title">Cartographiez vos risques</h1>
+                <p id="page-subtitle" style="color:var(--text-muted); font-size:0.9rem;">Construisez votre foyer numérique étape par étape.</p>
+            </header>
+
+            <div class="content-area">
+                
+                <!-- VUE : PARCOURS GUIDÉ (WIZARD) -->
+                <div id="view-wizard" class="view-section active-view">
+                    <div class="wizard-container">
+                        
+                        <!-- ÉTAPE 1 : Foyer Numérique -->
+                        <div id="w-step-1" class="wizard-step-content active-step">
+                            <h3 style="color: var(--accent);">Étape 1 – Construisez votre foyer numérique</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Cochez simplement les équipements et services que vous possédez.</p>
+                            
+                            <div class="category-box">
+                                <h4>🌐 Réseau</h4>
+                                <div class="checkbox-grid" id="cat-reseau">
+                                    <label class="checkbox-label"><input type="checkbox" value="Box Internet" checked> Box Internet</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Routeur Wi-Fi"> Routeur Wi-Fi</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Répéteur Wi-Fi"> Répéteur Wi-Fi</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="CPL"> CPL</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Pare-feu personnel"> Pare-feu personnel</label>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>💻 Ordinateurs</h4>
+                                <div class="checkbox-grid" id="cat-ordinateurs">
+                                    <label class="checkbox-label"><input type="checkbox" value="PC Windows" checked> PC Windows</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Mac"> Mac</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Linux"> Linux</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Chromebook"> Chromebook</label>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>📱 Appareils mobiles</h4>
+                                <div class="checkbox-grid" id="cat-mobiles">
+                                    <label class="checkbox-label"><input type="checkbox" value="Smartphone Android" checked> Smartphone Android</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="iPhone"> iPhone</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Tablette Android"> Tablette Android</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="iPad"> iPad</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Montre connectée"> Montre connectée</label>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>📺 Maison connectée & IoT</h4>
+                                <div class="checkbox-grid" id="cat-iot">
+                                    <label class="checkbox-label"><input type="checkbox" value="Smart TV" checked> Smart TV</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Caméra IP" checked> Caméra IP</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Sonnette connectée"> Sonnette connectée</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Alexa / Google Home"> Alexa / Google Home</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Thermostat"> Thermostat</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Aspirateur robot"> Aspirateur robot</label>
+                                </div>
+                            </div>
+
+                            <div class="category-box">
+                                <h4>☁️ Comptes importants & Services</h4>
+                                <div class="checkbox-grid" id="cat-comptes">
+                                    <label class="checkbox-label"><input type="checkbox" value="Gmail" checked> Gmail</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Banque en ligne" checked> Banque en ligne</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="France Identité" checked> France Identité</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Microsoft / Apple ID"> Microsoft / Apple ID</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Impôts / CAF"> Impôts / CAF</label>
+                                    <label class="checkbox-label"><input type="checkbox" value="Amazon / PayPal"> Amazon / PayPal</label>
+                                </div>
+                            </div>
+
+                            <!-- ÉTAPE 2 : Actif personnalisé -->
+                            <div class="category-box" style="border-color: var(--accent);">
+                                <h4>➕ Étape 2 – Ajouter un actif personnalisé</h4>
+                                <div class="custom-asset-row">
+                                    <input type="text" id="custom-asset-name" class="input-text" placeholder="Nom (ex: NAS Synology)">
+                                    <select id="custom-asset-cat" class="select-val" style="max-width: 200px;">
+                                        <option value="Réseau">Réseau</option>
+                                        <option value="Ordinateur">Ordinateur</option>
+                                        <option value="IoT">IoT</option>
+                                        <option value="Compte">Compte</option>
+                                        <option value="Autre">Autre</option>
+                                    </select>
+                                    <button class="btn" onclick="addCustomAsset()">Ajouter</button>
+                                </div>
+                                <div id="custom-assets-list" style="margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;"></div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button class="btn btn-lg" onclick="goToWizardStep(2)">Étape suivante : Questions intelligentes →</button>
+                            </div>
+                        </div>
+
+                        <!-- ÉTAPE 3 : Questions Intelligentes -->
+                        <div id="w-step-2" class="wizard-step-content">
+                            <h3 style="color: var(--accent);">Étape 3 – Questions intelligentes</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Basé sur vos équipements cochés, ajustez les paramètres de sécurité spécifiques :</p>
+                            
+                            <div id="dynamic-questions-container" style="display: flex; flex-direction: column; gap: 15px;">
+                                <!-- Généré dynamiquement -->
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between;">
+                                <button class="btn btn-secondary" onclick="goToWizardStep(1)">← Précédent</button>
+                                <button class="btn btn-lg btn-ai" onclick="runAiAnalysisWizard()">✨ Lancer l'analyse IA & Générer la Matrice</button>
+                            </div>
+                        </div>
+
+                        <!-- ÉTAPE 4 & 5 : Résultat Graphique & Risk Scores -->
+                        <div id="w-step-3" class="wizard-step-content">
+                            <h3 style="color: var(--accent);">Étape 4 & 5 – Cartographie du Foyer & Risk Scores</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Voici la cartographie de vos risques calculée automatiquement par l'IA :</p>
+                            
+                            <!-- Vue graphique type arbre -->
+                            <div class="home-graph-container">
+                                <div class="graph-node internet">🌐 Internet</div>
+                                <div class="graph-line"></div>
+                                <div class="graph-node box">Box Internet (Score : 83%)</div>
+                                <div class="graph-line"></div>
+                                <div class="graph-row">
+                                    <div>
+                                        <div class="graph-node" style="border-color: var(--danger);">📱 Smartphone (98%)</div>
+                                        <div class="graph-line" style="height: 15px;"></div>
+                                        <div style="display: flex; gap: 10px;">
+                                            <span style="font-size:0.75rem; background:var(--bg-card); padding:4px 8px; border-radius:4px;">Banque</span>
+                                            <span style="font-size:0.75rem; background:var(--bg-card); padding:4px 8px; border-radius:4px;">Gmail</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="graph-node" style="border-color: var(--warning);">💻 PC Windows (75%)</div>
+                                    </div>
+                                    <div>
+                                        <div class="graph-node" style="border-color: var(--warning);">📷 Caméra IP (72%)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h4 style="margin-top: 10px; color: var(--text-main);">Risk Score par Actif (Cliquez pour inspecter) :</h4>
+                            <div id="risk-scores-list" style="display: flex; flex-direction: column; gap: 10px;">
+                                <!-- Rempli dynamiquement -->
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+                                <button class="btn btn-secondary" onclick="goToWizardStep(2)">← Modifier les réponses</button>
+                                <button class="btn btn-lg" onclick="switchView('dashboard')">Voir la Matrice de Risque Finale →</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- VUE : TABLEAU DE BORD & MATRICE FINALE -->
+                <div id="view-dashboard" class="view-section">
+                    <div class="dashboard-cards">
+                        <div class="card-stat">
+                            <h3>Total Risques Analysés</h3>
+                            <div class="number" id="stat-total">0</div>
+                        </div>
+                        <div class="card-stat">
+                            <h3>Critiques / Élevés</h3>
+                            <div class="number" style="color: var(--danger);" id="stat-critical">0</div>
+                        </div>
+                        <div class="card-stat">
+                            <h3>Moyens</h3>
+                            <div class="number" style="color: var(--warning);" id="stat-medium">0</div>
+                        </div>
+                        <div class="card-stat">
+                            <h3>Faibles</h3>
+                            <div class="number" style="color: var(--success);" id="stat-low">0</div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 15px;">
+                        <h3>Matrice de Criticité 5×5 (Résultat Final de l'Analyse)</h3>
+                        <div class="matrix-grid" id="matrix-container"></div>
+                    </div>
+                </div>
+
+                <!-- VUE : REGISTRE DES RISQUES -->
+                <div id="view-register" class="view-section">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Actif / Équipement</th>
+                                    <th>Scénario de Menace</th>
+                                    <th>Propriétaire</th>
+                                    <th>Prob.</th>
+                                    <th>Impact</th>
+                                    <th>Criticité</th>
+                                    <th>Plan de Traitement Automatisé</th>
+                                </tr>
+                            </thead>
+                            <tbody id="risk-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VUE : PARAMÈTRES -->
+                <div id="view-settings" class="view-section">
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 25px; border-radius: 12px;">
+                        <h3>Paramètres de l'application</h3>
+                        <div style="margin-top: 15px;">
+                            <label style="color: var(--text-muted); display: block; margin-bottom: 5px;">Thème :</label>
+                            <select id="setting-theme" class="select-val" onchange="toggleTheme(this.value)" style="max-width: 300px;">
+                                <option value="dark">Sombre (Dark)</option>
+                                <option value="light">Clair (Light)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let customAssets = [];
+        let generatedRisks = [];
+
+        function launchAppFromLanding() {
+            document.getElementById('landing-view').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            buildDynamicQuestions();
+        }
+
+        function returnToLanding() {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('landing-view').style.display = 'flex';
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.nav-links li').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active-view'));
+
+            if (viewName === 'wizard') {
+                document.getElementById('nav-wizard').classList.add('active');
+                document.getElementById('view-wizard').classList.add('active-view');
+                document.getElementById('page-title').textContent = "Cartographiez vos risques";
+                document.getElementById('page-subtitle').textContent = "Construisez votre foyer numérique étape par étape.";
+            } else if (viewName === 'dashboard') {
+                document.getElementById('nav-dashboard').classList.add('active');
+                document.getElementById('view-dashboard').classList.add('active-view');
+                document.getElementById('page-title').textContent = "Tableau de Bord & Matrice Finale";
+                document.getElementById('page-subtitle').textContent = "Résultat de l'analyse automatique de votre foyer.";
+                renderMatrixAndDashboard();
+            } else if (viewName === 'register') {
+                document.getElementById('nav-register').classList.add('active');
+                document.getElementById('view-register').classList.add('active-view');
+                document.getElementById('page-title').textContent = "Registre des Risques";
+                document.getElementById('page-subtitle').textContent = "Détail des menaces identifiées et plans d'action.";
+                renderRegisterTable();
+            } else if (viewName === 'settings') {
+                document.getElementById('nav-settings').classList.add('active');
+                document.getElementById('view-settings').classList.add('active-view');
+                document.getElementById('page-title').textContent = "Paramètres";
+                document.getElementById('page-subtitle').textContent = "Configuration générale.";
+            }
+        }
+
+        function goToWizardStep(stepNum) {
+            document.querySelectorAll('.wizard-step-content').forEach(el => el.classList.remove('active-step'));
+            document.getElementById(`w-step-${stepNum}`).classList.add('active-step');
+            if (stepNum === 2) {
+                buildDynamicQuestions();
+            }
+        }
+
+        function addCustomAsset() {
+            const name = document.getElementById('custom-asset-name').value;
+            const cat = document.getElementById('custom-asset-cat').value;
+            if(!name) return;
+            customAssets.push({ name, cat });
+            document.getElementById('custom-asset-name').value = '';
+            renderCustomAssetsList();
+        }
+
+        function renderCustomAssetsList() {
+            const container = document.getElementById('custom-assets-list');
+            container.innerHTML = customAssets.map(a => `<span style="background:var(--bg-main); border:1px solid var(--border); padding:4px 10px; border-radius:6px; font-size:0.85rem;">${a.name} (${a.cat})</span>`).join('');
+        }
+
+        function buildDynamicQuestions() {
+            const container = document.getElementById('dynamic-questions-container');
+            container.innerHTML = '';
+
+            // Vérifier si Caméra IP est cochée
+            const checkboxes = document.querySelectorAll('#cat-iot input[type="checkbox"]');
+            let hasCamera = false;
+            checkboxes.forEach(cb => { if(cb.value.includes('Caméra IP') && cb.checked) hasCamera = true; });
+
+            if (hasCamera) {
+                container.innerHTML += `
+                    <div class="category-box">
+                        <h4>📷 Sécurité spécifique : Caméra IP détectée</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem;">
+                            <label><input type="checkbox" id="q-cam-internet" checked> Est-elle accessible depuis Internet ?</label>
+                            <label><input type="checkbox" id="q-cam-pwd" checked> Utilise-t-elle un mot de passe unique par défaut ?</label>
+                            <label><input type="checkbox" id="q-cam-2fa"> Possède-t-elle une double authentification (2FA) ?</label>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML += `<p style="color: var(--text-muted);">Aucun équipement critique spécifique nécessitant des questions additionnelles n'a été détecté. Vous pouvez lancer l'analyse.</p>`;
+            }
+        }
+
+        function runAiAnalysisWizard() {
+            // Génération automatique des risques et scores basés sur la sélection
+            generatedRisks = [
+                { asset: "Smartphone Android", title: "Vol ou compromission de données personnelles", owner: "Utilisateur", prob: 4, impact: 5, score: 98, details: ["Accès aux e-mails (Gmail)", "Applications bancaires", "Photos personnelles", "Gestionnaire de mots de passe", "Authentification multifactorielle (MFA) activée partiellement"] },
+                { asset: "Box Internet", title: "Exposition de ports et services vulnérables", owner: "FAI / Foyer", prob: 3, impact: 4, score: 83, details: ["Firmware par défaut", "Accès distant activé", "Wi-Fi invité non isolé"] },
+                { asset: "Caméra IP", title: "Accès non autorisé au flux vidéo du foyer", owner: "IoT", prob: 4, impact: 4, score: 72, details: ["Accessible depuis Internet", "Mot de passe unique non modifié", "Stockage cloud tiers"] },
+                { asset: "PC Windows", title: "Infection par Ransomware ou Malware", owner: "Utilisateur", prob: 3, impact: 3, score: 75, details: ["Navigation web quotidienne", "Sauvegardes locales absentes"] },
+                { asset: "Smart TV", title: "Collecte de données et écoute passive", owner: "IoT", prob: 2, impact: 2, score: 28, details: ["Connectée au réseau local", "Micrologiciel obsolète"] }
+            ];
+
+            renderRiskScores();
+            goToWizardStep(3);
+        }
+
+        function renderRiskScores() {
+            const container = document.getElementById('risk-scores-list');
+            container.innerHTML = generatedRisks.map(r => {
+                let color = 'var(--success)';
+                if(r.score > 80) color = 'var(--danger)';
+                else if(r.score > 50) color = 'var(--warning)';
+
+                return `
+                    <div class="risk-score-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong>${r.asset} — ${r.title}</strong>
+                            <span style="font-weight: bold; color: ${color};">${r.score} %</span>
+                        </div>
+                        <div class="score-bar-bg">
+                            <div class="score-bar-fill" style="width: ${r.score}%; background-color: ${color};"></div>
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+                            Facteurs : ${r.details.join(' • ')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMatrixAndDashboard() {
+            let total = generatedRisks.length;
+            let critical = generatedRisks.filter(r => r.score > 80).length;
+            let medium = generatedRisks.filter(r => r.score > 50 && r.score <= 80).length;
+            let low = generatedRisks.filter(r => r.score <= 50).length;
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-critical').textContent = critical;
+            document.getElementById('stat-medium').textContent = medium;
+            document.getElementById('stat-low').textContent = low;
+
+            const container = document.getElementById('matrix-container');
+            container.innerHTML = '';
+            for (let y = 5; y >= 1; y--) {
+                for (let x = 1; x <= 5; x++) {
+                    let cellClass = 'risk-low';
+                    if (x * y >= 16) cellClass = 'risk-high';
+                    else if (x * y >= 8) cellClass = 'risk-med';
+
+                    let cellDiv = document.createElement('div');
+                    cellDiv.className = `matrix-cell ${cellClass}`;
+                    cellDiv.innerHTML = `<span>P:${x} I:${y}</span> <strong>${x*y >= 12 ? 'Critique' : 'Standard'}</strong>`;
+                    container.appendChild(cellDiv);
+                }
+            }
+        }
+
+        function renderRegisterTable() {
+            const tbody = document.getElementById('risk-table-body');
+            tbody.innerHTML = generatedRisks.map(r => `
+                <tr>
+                    <td><strong>${r.asset}</strong></td>
+                    <td>${r.title}</td>
+                    <td>${r.owner}</td>
+                    <td>${r.prob}</td>
+                    <td>${r.impact}</td>
+                    <td><span style="color: ${r.score > 80 ? 'var(--danger)' : 'var(--warning)'}; font-weight: bold;">Score ${r.score}%</span></td>
+                    <td>Mise en place de bonnes pratiques & durcissement de l'actif.</td>
+                </tr>
+            `).join('');
+        }
+
+        function toggleTheme(theme) {
+            if(theme === 'light') document.body.classList.add('theme-light');
+            else document.body.classList.remove('theme-light');
+        }
+    </script>
+</body>
+</html>
